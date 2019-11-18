@@ -1,0 +1,38 @@
+---
+- hosts: localhost
+  roles:
+    - ../ansible-maas-curtin
+  vars:
+    curtin_userdata_enabled:
+      - image: "ubuntu_18_gnss_router"
+    curtin_userdata_templates:
+      ubuntu_18_gnss_router:
+        package:
+          upgrade: "True"
+        networking:
+          renderers:
+            - netplan
+            - eni
+          interfaces:
+            network:
+              version: 1
+              config:
+                - type: physical
+                  name: eth0
+                  mtu: 1500
+                  subnets:
+                    - type: static
+                      control: auto
+                      address: 192.168.10.250/24
+                      gateway: 192.168.10.1
+                      dns_nameservers: []
+                      routes: []
+                - type: nameserver
+                  address:
+                    - 192.168.10.2
+                  search:
+                    - navya.tech
+                - type: route
+                  destination: 10.22.98.0/24
+                  gateway: 192.168.10.1
+                  metric: 0
