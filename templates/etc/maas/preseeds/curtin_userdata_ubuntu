@@ -1,0 +1,3 @@
+# {{ ansible_managed }}
+#cloud-config
+stages: ['early', 'partitioning', 'network', 'extract', 'curthooks', 'hook', 'late']

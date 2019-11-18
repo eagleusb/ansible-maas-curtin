@@ -1,0 +1,7 @@
+---
+
+- name: "import | pass assertions"
+  import_tasks: assert.yml
+
+- name: "import | configure maas curtin userdata"
+  import_tasks: config.yml

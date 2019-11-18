@@ -1,0 +1,19 @@
+---
+- name: "config | configure curtin userdata files"
+  template:
+    # NOTE:
+    #   thanks to YAML multi-line strings,
+    #   backslash are needed.
+    src: "etc/maas/preseeds/curtin_userdata_custom"
+    dest:
+      "/etc/maas/preseeds/curtin_userdata_custom\
+      _{{ _userdata.arch | default('amd64') }}\
+      _{{ _userdata.subarch | default('generic') }}\
+      _{{ _userdata.image | mandatory() }}"
+    mode: "0644"
+    owner: maas
+    group: maas
+    backup: yes
+  loop: "{{ curtin_userdata_enabled }}"
+  loop_control:
+    loop_var: _userdata

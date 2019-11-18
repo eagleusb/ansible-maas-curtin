@@ -1,0 +1,65 @@
+#cloud-config
+# {{ ansible_managed }}
+
+{% set image = _userdata.image %}
+{% set curtin_stages = curtin_userdata_templates[image]["stages"] %}
+{% set curtin_network = curtin_userdata_templates[image]["networking"] %}
+{% set curtin_packages = curtin_userdata_templates[image]["packages"] %}
+
+stages: {{ curtin_stages | default(curtin_defaults.stages) }}
+
+# Network
+## Restore /etc/network/interfaces
+restore_dist_interfaces: {{ curtin_network["restore_interfaces"] | default(curtin_defaults.network.restore_interfaces) }}
+
+## Configure netplan through cloud-init
+system_info:
+  network:
+    renderers: {{ curtin_network["renderers"] | default(["eni", "netplan"]) }}
+
+{% if curtin_network["interfaces"] is defined and curtin_network["interfaces"] %}
+{{ curtin_network["interfaces"] | to_nice_yaml(indent=2) }}
+{% endif %}
+
+{% raw %}
+debconf_selections:
+ maas: |
+  {{for line in str(curtin_preseed).splitlines()}}
+  {{line}}
+  {{endfor}}
+{% endraw %}
+
+# Upgrade packages
+system_upgrade:
+  enabled: {{ curtin_packages["upgrade"] | default(curtin_defaults.package.upgrade) }}
+
+# Hooks commands
+## Early
+#early_commands:
+
+## Late
+{% raw %}
+late_commands:
+  10_report_to_maas: [wget, '--no-proxy', '{{node_disable_pxe_url}}', '--post-data', '{{node_disable_pxe_data}}', '-O', '/dev/null']
+  20_remove_netplan_default: ["curtin", "in-target", "--", "rm", "-rf", "/etc/netplan/01-netcfg.yaml"]
+  30_generate_netplan_config: ["curtin", "in-target", "--", "sh", "-c", "netplan --debug generate"]
+  40_enable_systemd_networkd: ["curtin", "in-target", "--", "sh", "-c", "systemctl enable systemd-networkd"]
+{% endraw %}
+
+## Final
+#final_commands:
+
+# Report
+#reporting:
+#  maas:
+#    level: DEBUG
+#    type: webhook
+#    endpoint: http://localhost:8000/
+
+pollinate:
+   user_agent: false
+
+power_state:
+  mode: poweroff
+  delay: 15
+  message: Installation finished. Rebooting in 15 seconds...
