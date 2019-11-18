@@ -33,7 +33,45 @@ Use `ansible-galaxy` or download the role in your `roles` directory.
 
 ## Role Variables
 
+Sane Curtin defaults are set in the variables, see [defaults/main.yml/curtin_defaults](./defaults/main.yml)
+
+Variables can extended and overrided like this in variables:
 ```yaml
+curtin_userdata_enabled:
+  - image: "ubuntu_18_custom_image"
+
+curtin_userdata_templates:
+  ubuntu_18_custom_image:
+    package:
+      upgrade: "True"
+    networking:
+      renderers:
+        - netplan
+        - eni
+      interfaces:
+      # cloud-init format
+        network:
+          version: 1
+          config:
+            - type: physical
+              name: eth0
+              mtu: 1500
+              subnets:
+                - type: static
+                  control: auto
+                  address: 192.168.10.250/24
+                  gateway: 192.168.10.1
+                  dns_nameservers: []
+                  routes: []
+            - type: nameserver
+              address:
+                - 192.168.10.254
+              search:
+                - foobar.lan
+            - type: route
+              destination: 10.22.98.0/24
+              gateway: 192.168.10.1
+              metric: 0
 ```
 
 ## Playbook Example
