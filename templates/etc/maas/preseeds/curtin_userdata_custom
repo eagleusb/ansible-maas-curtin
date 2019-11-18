@@ -5,6 +5,7 @@
 {% set curtin_stages = curtin_userdata_templates[image]["stages"] %}
 {% set curtin_network = curtin_userdata_templates[image]["networking"] %}
 {% set curtin_packages = curtin_userdata_templates[image]["packages"] %}
+{% set curtin_commands = curtin_userdata_templates[image]["commands"] %}
 
 stages: {{ curtin_stages | default(curtin_defaults.stages) }}
 
@@ -34,20 +35,32 @@ system_upgrade:
   enabled: {{ curtin_packages["upgrade"] | default(curtin_defaults.package.upgrade) }}
 
 # Hooks commands
+{% if curtin_commands["early"] is defined and curtin_commands["early"] is sequence() %}
 ## Early
-#early_commands:
+early_commands:
+{% for command in curtin_commands["early"] %}
+  {{ command }}
+{% endfor %}
+{% endif %}
 
 ## Late
-{% raw %}
 late_commands:
+{% raw %}
   10_report_to_maas: [wget, '--no-proxy', '{{node_disable_pxe_url}}', '--post-data', '{{node_disable_pxe_data}}', '-O', '/dev/null']
-  20_remove_netplan_default: ["curtin", "in-target", "--", "rm", "-rf", "/etc/netplan/01-netcfg.yaml"]
-  30_generate_netplan_config: ["curtin", "in-target", "--", "sh", "-c", "netplan --debug generate"]
-  40_enable_systemd_networkd: ["curtin", "in-target", "--", "sh", "-c", "systemctl enable systemd-networkd"]
 {% endraw %}
+{% if curtin_commands["late"] is defined and curtin_commands["late"] is sequence() %}
+{% for command in curtin_commands["late"] %}
+  {{ command }}
+{% endfor %}
+{% endif %}
 
+{% if curtin_commands["final"] is defined and curtin_commands["final"] is sequence() %}
 ## Final
-#final_commands:
+final_commands:
+{% for command in curtin_commands["final"] %}
+  {{ command }}
+{% endfor %}
+{% endif %}
 
 # Report
 #reporting:

@@ -12,6 +12,10 @@ curtin_defaults:
     - late
   package:
     upgrade: "False"
+  commands:
+    early: []
+    late: []
+    final: []
   network:
     restore_interfaces: "False"
 

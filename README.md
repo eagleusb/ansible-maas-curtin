@@ -44,6 +44,15 @@ curtin_userdata_templates:
   ubuntu_18_custom_image:
     package:
       upgrade: "True"
+    commands:
+      early:
+        - '10_foobar: ["curtin", "in-target", "--", "echo", "bar"]'
+      late:
+        - '20_remove_netplan_default: ["curtin", "in-target", "--", "rm", "-rf", "/etc/netplan/01-netcfg.yaml"]'
+        - '30_generate_netplan_config: ["curtin", "in-target", "--", "sh", "-c", "netplan --debug generate"]'
+        - '40_enable_systemd_networkd: ["curtin", "in-target", "--", "sh", "-c", "systemctl enable systemd-networkd"]'
+      final:
+        - '10_foobaz: ["curtin", "in-target", "--", "echo", "baz"]'
     networking:
       renderers:
         - netplan
