@@ -1,0 +1,15 @@
+galaxy_info:
+  author: Leslie-Alexandre DENIS
+  description: Install and configure MAAS curtin installer
+  license: MIT
+  min_ansible_version: 2.7
+  platforms:
+    - name: Ubuntu
+      versions:
+        - bionic
+  galaxy_tags:
+    - system
+    - installer
+    - maas
+    - curtin
+dependencies: []
