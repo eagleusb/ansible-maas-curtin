@@ -1,0 +1,24 @@
+---
+# type: dict
+# descr: curtin defaults for custom userdata template
+curtin_defaults:
+  stages:
+    - early
+    - partitioning
+    - network
+    - extract
+    - curthooks
+    - hook
+    - late
+  package:
+    upgrade: "False"
+  network:
+    restore_interfaces: "False"
+
+# type: list
+# descr: list of custom userdata mapped to image names
+curtin_userdata_enabled: []
+
+# type: dict
+# descr: cloud-init userdata custom configuration mapped to image names
+curtin_userdata_templates: {}
