@@ -95,7 +95,7 @@ Use default configuration, means that nothing will be done.
 
 ## Dependencies
 
-None.
+- ansible-maas-regiond
 
 ## Limitations
 
