@@ -45,7 +45,7 @@ early_commands:
 
 ## Late
 late_commands:
-{% raw %}
+{%- raw %}
   10_report_to_maas: [wget, '--no-proxy', '{{node_disable_pxe_url}}', '--post-data', '{{node_disable_pxe_data}}', '-O', '/dev/null']
 {% endraw %}
 {% if curtin_commands["late"] is defined and curtin_commands["late"] is sequence() %}
