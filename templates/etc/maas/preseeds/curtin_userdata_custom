@@ -6,6 +6,7 @@
 {% set curtin_network = curtin_userdata_templates[image]["networking"] %}
 {% set curtin_packages = curtin_userdata_templates[image]["packages"] %}
 {% set curtin_commands = curtin_userdata_templates[image]["commands"] %}
+{% set curtin_partitioning = curtin_userdata_templates[image]["partitioning"] %}
 
 stages: {{ curtin_stages | default(curtin_defaults.stages) }}
 
@@ -20,6 +21,10 @@ system_info:
 
 {% if curtin_network["interfaces"] is defined and curtin_network["interfaces"] %}
 {{ curtin_network["interfaces"] | to_nice_yaml(indent=2) }}
+{% endif %}
+
+{% if curtin_partitioning is defined and curtin_partitioning %}
+{{ curtin_partitioning | to_nice_yaml(indent=2) }}
 {% endif %}
 
 {% raw %}

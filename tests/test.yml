@@ -45,3 +45,56 @@
                   destination: 10.22.98.0/24
                   gateway: 192.168.10.1
                   metric: 0
+        partitioning:
+          storage:
+            version: 1
+            config:
+              - id: sda
+                name: sda
+                path: /dev/sda
+                ptable: msdos
+                type: disk
+                wipe: superblock
+                grub_device: true
+              - id: sda-part1
+                name: sda-part1
+                number: 1
+                size: 64017661952B
+                type: partition
+                wipe: superblock
+                device: sda
+              - type: lvm_volgroup
+                devices:
+                  - sda-part1
+                id: vgroot
+                name: vgroot
+              - type: lvm_partition
+                id: vgroot-lvroot
+                name: lvroot
+                size: 30G
+                volgroup: vgroot
+              - id: vgroot-lvopt
+                name: lvopt
+                size: 9G
+                type: lvm_partition
+                volgroup: vgroot
+              - fstype: ext4
+                id: vgroot-lvroot_format
+                label: ''
+                type: format
+                volume: vgroot-lvroot
+              - fstype: ext4
+                id: vgroot-lvopt_format
+                label: ''
+                type: format
+                volume: vgroot-lvopt
+              - id: vgroot-lvroot_mount
+                type: mount
+                options: "defaults"
+                path: /
+                device: vgroot-lvroot_format
+              - id: vgroot-lvopt_mount
+                type: mount
+                options: "defaults"
+                path: /opt
+                device: vgroot-lvopt_format
